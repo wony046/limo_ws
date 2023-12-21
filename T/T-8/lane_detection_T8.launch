@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+      <arg name="marker_size" default="4.4" />
+        <arg name="max_new_marker_error" default="0.08" />
+        <arg name="max_track_error" default="0.2" />
+        <arg name="cam_image_topic" default="/camera/rgb/image_raw" />
+        <arg name="cam_info_topic" default="/camera/rgb/camera_info" />
+        <arg name="output_frame" default="/camera_link" />
+        <arg name="mark_topic" default="/ar_pose_marker" />
+
+   <node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen">
+                <param name="marker_size"           type="double" value="$(arg marker_size)" />
+                <param name="max_new_marker_error"  type="double" value="$(arg max_new_marker_error)" />
+                <param name="max_track_error"       type="double" value="$(arg max_track_error)" />
+                <param name="output_frame"          type="string" value="$(arg output_frame)" />
+                <param name="mark_topic"             type="string" value="$(arg mark_topic)" />
+                <param name="cam_image_topic"          type="string" value="$(arg cam_image_topic)" />
+                <param name="cam_info_topic"             type="string" value="$(arg cam_info_topic)" />
+
+      <remap from="camera_image"  to="$(arg cam_image_topic)" />
+      <remap from="camera_info"   to="$(arg cam_info_topic)" />
+   </node>
+   <node name="lane_detect" pkg="limo_application" type="lane_detect.py" output="log">
+      <rosparam file="$(find limo_application)/params/lane_detection/lane_detection.yaml" command="load" />
+      <param name="image_topic_name" value="/camera/rgb/image_raw/compressed"/>
+      <param name="visualization" value="True"/>
+   </node>
+   <node name="crosswalk_detect" pkg="limo_application" type="crosswalk_detect.py" output="screen">
+      <rosparam file="$(find limo_application)/params/lane_detection/crosswalk.yaml" command="load" />
+      <param name="image_topic_name" value="/camera/rgb/image_raw/compressed"/>
+      <param name="visualization" value="False"/>
+   </node>
+   <node name="limo_control" pkg="limo_application" type="control.py" output="screen">
+      <rosparam file="$(find limo_application)/params/lane_detection/control.yaml" command="load" />
+      <param name="control_topic_name" value="/cmd_vel"/>
+   </node>
+   <node name="lidar_e_stop" pkg="limo_application" type="e_stop.py" output="log">
+      <rosparam file="$(find limo_application)/params/lane_detection/e_stop.yaml" command="load" />
+      <param name="lidar_topic_name" value="/scan"/>
+   </node>
+</launch> 
