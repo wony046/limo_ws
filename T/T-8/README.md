@@ -23,3 +23,7 @@ self.drive_pub.publish(drive_data)는 드라이브 데이터를 차량에 보내
 줄193~201은 벽에서 e-stop이 발생하였을 때 차선복귀를 위한 코드, e-stop발동 후 시간이 10초가 넘으면 회전하는 방식.
 self.calcTimeFromDetection(self.pedestrian_stop_last_time)로 시간측정, 
 self.pedestrian_stop_last_time = rospy.Time.now().to_sec()는 측정시간 초기화 --> 돌발상황, 차단기와 같은 상황에서 발동한 e-stop에서 기록된 시간이 누적되기 때문에 이를 방지하기 위해 필요(줄221)
+
+
+[lane_detection.launch]: 기존 limo_applicationmaster의 launch의 .launch파일에 markerIDcontrol의 launch을 합친 방식. 
+이때 기존 5.markerIDcontrol.launch파일에 오류가 있어 해당부분 수정하여 두 파일을 합쳤음.
